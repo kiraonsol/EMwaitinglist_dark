@@ -33,7 +33,7 @@ body {
     width: 100%;
     height: 100vh;
     z-index: 1;
-    opacity: 0.5; /* Increased opacity to make WebGL more visible */
+    opacity: 0.75; /* Increased from 0.5 to 0.75 for much better visibility */
     display: block;
 }
 
@@ -265,6 +265,7 @@ body {
     position: relative;
     width: 80px;
     height: 80px;
+    overflow: hidden; /* Ensure the animation stays within bounds */
 }
 
 .site-logo {
@@ -285,8 +286,9 @@ body {
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     background: transparent;
-    /* Ensure the logo is fully visible and the animation shows through */
-    mix-blend-mode: lighten; /* Helps with visibility against the animation */
+    mix-blend-mode: lighten; /* Blend with the animation */
+    /* Ensure the logo is on top of the animation */
+    z-index: 1;
 }
 
 .site-logo:hover {
@@ -404,7 +406,7 @@ body {
         width: 100%;
         height: 100%;
         z-index: 1;
-        opacity: 0.5; /* Increased opacity */
+        opacity: 0.75; /* Increased opacity */
     }
 
     .webgl-fallback p {
