@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EVIL MODEL | Join the Waitlist (Dark Mode)</title>
-    <link rel="stylesheet" href="styles-dark.css">
+    <title>EVIL MODEL | Join the Waitlist</title>
+    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body class="light-mode">
     <canvas id="webgl-background"></canvas>
     <div class="content">
         <header class="site-header">
             <div class="logo-container">
                 <canvas id="logo-animation" class="logo-animation"></canvas>
                 <div class="site-logo" id="site-logo"></div>
+            </div>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider"></span>
+                </label>
+                <span class="theme-label">Light Mode</span>
             </div>
         </header>
         <section class="hero-section">
@@ -62,6 +69,6 @@
         </footer>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script-dark.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
