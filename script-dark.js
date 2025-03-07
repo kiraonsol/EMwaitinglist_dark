@@ -205,82 +205,93 @@ class WaitlistApp {
         // Create a plane to render the iridescent effect
         const geometry = new THREE.PlaneGeometry(width, height);
 
-        // Custom shader for iridescent effect
-        const vertexShader = `
-            varying vec2 vUv;
-            void main() {
-                vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `;
+        // Load the logo texture for masking
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('logo.png', (texture) => {
+            // Custom shader for iridescent effect with mask
+            const vertexShader = `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `;
 
-        const fragmentShader = `
-            uniform float time;
-            uniform vec2 resolution;
-            varying vec2 vUv;
+            const fragmentShader = `
+                uniform float time;
+                uniform vec2 resolution;
+                uniform sampler2D maskTexture;
+                varying vec2 vUv;
 
-            vec3 hsv2rgb(vec3 c) {
-                vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-                return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-            }
+                vec3 hsv2rgb(vec3 c) {
+                    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+                }
 
-            void main() {
-                vec2 uv = vUv;
-                vec2 center = vec2(0.5, 0.5);
-                vec2 pos = uv - center;
-                float dist = length(pos);
-                float angle = atan(pos.y, pos.x) + time * 0.5;
-                float hue = sin(dist * 10.0 - time) * 0.5 + 0.5 + angle * 0.1;
-                hue = fract(hue);
-                vec3 color = hsv2rgb(vec3(hue, 0.8, 1.0));
-                gl_FragColor = vec4(color, 1.0);
-            }
-        `;
+                void main() {
+                    vec2 uv = vUv;
+                    vec2 center = vec2(0.5, 0.5);
+                    vec2 pos = uv - center;
+                    float dist = length(pos);
+                    float angle = atan(pos.y, pos.x) + time * 0.5;
+                    float hue = sin(dist * 10.0 - time) * 0.5 + 0.5 + angle * 0.1;
+                    hue = fract(hue);
+                    vec3 color = hsv2rgb(vec3(hue, 0.8, 1.0));
 
-        const material = new THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
-            uniforms: {
-                time: { value: 0.0 },
-                resolution: { value: new THREE.Vector2(width, height) }
-            },
-            transparent: true
+                    // Apply mask using the alpha channel of the logo texture
+                    float mask = texture2D(maskTexture, vUv).a;
+                    gl_FragColor = vec4(color, mask);
+                }
+            `;
+
+            const material = new THREE.ShaderMaterial({
+                vertexShader,
+                fragmentShader,
+                uniforms: {
+                    time: { value: 0.0 },
+                    resolution: { value: new THREE.Vector2(width, height) },
+                    maskTexture: { value: texture }
+                },
+                transparent: true
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // Animation loop
+            let time = 0;
+            const animate = () => {
+                time += 0.05;
+                material.uniforms.time.value = time;
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+
+            // Handle resize
+            const handleResize = () => {
+                width = canvas.offsetWidth;
+                height = canvas.offsetHeight;
+                canvas.width = width;
+                canvas.height = height;
+                renderer.setSize(width, height);
+                material.uniforms.resolution.value.set(width, height);
+
+                camera.left = -width / 2;
+                camera.right = width / 2;
+                camera.top = height / 2;
+                camera.bottom = -height / 2;
+                camera.updateProjectionMatrix();
+            };
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+
+            console.log("Starting WebGL logo animation with mask...");
+            animate();
+        }, undefined, (error) => {
+            console.error("Error loading logo.png:", error);
         });
-
-        const mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
-
-        // Animation loop
-        let time = 0;
-        const animate = () => {
-            time += 0.05;
-            material.uniforms.time.value = time;
-            renderer.render(scene, camera);
-            requestAnimationFrame(animate);
-        };
-
-        // Handle resize
-        const handleResize = () => {
-            width = canvas.offsetWidth;
-            height = canvas.offsetHeight;
-            canvas.width = width;
-            canvas.height = height;
-            renderer.setSize(width, height);
-            material.uniforms.resolution.value.set(width, height);
-
-            camera.left = -width / 2;
-            camera.right = width / 2;
-            camera.top = height / 2;
-            camera.bottom = -height / 2;
-            camera.updateProjectionMatrix();
-        };
-
-        window.addEventListener('resize', handleResize);
-        handleResize();
-
-        console.log("Starting WebGL logo animation...");
-        animate();
     }
 
     initForm() {
