@@ -278,13 +278,7 @@ body {
     transform: translateY(-20px);
     animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition: transform 0.3s ease, filter 0.3s ease;
-    /* Apply the mask */
-    -webkit-mask-image: url('logo.png');
-    mask-image: url('logo.png');
-    -webkit-mask-size: cover;
-    mask-size: cover;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
+    /* Mask is now handled in WebGL, so remove CSS mask */
     background: transparent;
     z-index: 1;
 }
@@ -300,7 +294,7 @@ body {
     left: 0;
     width: 80px;
     height: 80px;
-    z-index: 0; /* Behind the logo mask */
+    z-index: 0; /* Behind the logo */
 }
 
 @keyframes fadeDown {
