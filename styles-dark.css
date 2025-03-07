@@ -33,7 +33,7 @@ body {
     width: 100%;
     height: 100vh;
     z-index: 1;
-    opacity: 0.75; /* Increased from 0.5 to 0.75 for much better visibility */
+    opacity: 0.75;
     display: block;
 }
 
@@ -265,7 +265,7 @@ body {
     position: relative;
     width: 80px;
     height: 80px;
-    overflow: hidden; /* Ensure the animation stays within bounds */
+    overflow: hidden;
 }
 
 .site-logo {
@@ -274,11 +274,11 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    display: block;
     opacity: 0;
     transform: translateY(-20px);
     animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition: transform 0.3s ease, filter 0.3s ease;
+    /* Apply the mask */
     -webkit-mask-image: url('logo.png');
     mask-image: url('logo.png');
     -webkit-mask-size: cover;
@@ -286,8 +286,6 @@ body {
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     background: transparent;
-    mix-blend-mode: lighten; /* Blend with the animation */
-    /* Ensure the logo is on top of the animation */
     z-index: 1;
 }
 
@@ -302,7 +300,7 @@ body {
     left: 0;
     width: 80px;
     height: 80px;
-    z-index: -1; /* Behind the logo */
+    z-index: 0; /* Behind the logo mask */
 }
 
 @keyframes fadeDown {
@@ -406,7 +404,7 @@ body {
         width: 100%;
         height: 100%;
         z-index: 1;
-        opacity: 0.75; /* Increased opacity */
+        opacity: 0.75;
     }
 
     .webgl-fallback p {
