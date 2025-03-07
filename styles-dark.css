@@ -1,11 +1,11 @@
 :root {
-    --primary: #FF6F61; /* Keep the same highlight color */
+    --primary: #FF6F61;
     --primary-dark: #E25747;
-    --background: #000000; /* Black background for dark mode */
-    --text: #FFFFFF; /* White text for dark mode */
-    --text-secondary: rgba(255, 255, 255, 0.7); /* Lighter gray for secondary text */
-    --overlay: rgba(0, 0, 0, 0.9); /* Dark overlay for mobile hero content */
-    --glass: rgba(255, 255, 255, 0.1); /* Slightly lighter glass effect for dark mode */
+    --background: #000000;
+    --text: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --overlay: rgba(0, 0, 0, 0.9);
+    --glass: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -43,7 +43,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.95); /* Dark background for fallback */
+    background: rgba(0, 0, 0, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,7 +103,7 @@ body {
     position: relative;
     z-index: 2;
     font-weight: 800;
-    color: var(--text); /* White text for dark mode */
+    color: var(--text);
 }
 
 .subtitle {
@@ -134,13 +134,13 @@ body {
 .input-field {
     flex: 1;
     padding: 1rem 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Light border for dark mode */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(200, 200, 200, 0.05) 100%);
     backdrop-filter: blur(12px);
     transition: all 0.3s ease;
     font-weight: 400;
-    color: var(--text); /* White text */
+    color: var(--text);
 }
 
 .input-field:focus {
@@ -150,13 +150,13 @@ body {
 }
 
 .input-field::placeholder {
-    color: var(--text-secondary); /* Lighter placeholder text */
+    color: var(--text-secondary);
 }
 
 .submit-btn {
     padding: 1rem 2rem;
-    background: var(--text); /* White button background */
-    color: var(--background); /* Black text on button */
+    background: var(--text);
+    color: var(--background);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -166,8 +166,8 @@ body {
 
 .submit-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 24px rgba(255, 255, 255, 0.15); /* Light shadow for dark mode */
-    background: #E6E6E6; /* Slightly darker white on hover */
+    box-shadow: 0 12px 24px rgba(255, 255, 255, 0.15);
+    background: #E6E6E6;
 }
 
 .form-note {
@@ -185,7 +185,7 @@ body {
     opacity: 0;
     transform: translateY(40px);
     animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
-    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1); /* Light shadow for dark mode */
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
     background: var(--glass);
     backdrop-filter: blur(12px);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -220,7 +220,7 @@ body {
     padding: 1rem;
     font-size: 0.75rem;
     color: var(--text-secondary);
-    background: rgba(0, 0, 0, 0.95); /* Dark footer background */
+    background: rgba(0, 0, 0, 0.95);
     margin-top: auto;
     font-weight: 400;
 }
@@ -261,19 +261,43 @@ body {
     z-index: 3;
 }
 
+.logo-container {
+    position: relative;
+    width: 80px;
+    height: 80px; /* Match the logo size */
+}
+
 .site-logo {
     width: 80px;
-    height: auto;
+    height: 80px;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
     opacity: 0;
     transform: translateY(-20px);
     animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition: transform 0.3s ease, filter 0.3s ease;
+    /* Use the logo as a mask */
+    -webkit-mask-image: url('logo.png');
+    mask-image: url('logo.png');
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    background: transparent; /* Ensure the logo itself is transparent, revealing the canvas underneath */
 }
 
 .site-logo:hover {
     transform: scale(1.05);
     filter: brightness(1.2);
+}
+
+.logo-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    z-index: -1; /* Behind the logo */
 }
 
 @keyframes fadeDown {
@@ -303,7 +327,7 @@ body {
         text-align: center;
         padding-top: 6rem;
         padding-bottom: 2rem;
-        background: rgba(0, 0, 0, 0.9); /* Dark background for mobile hero */
+        background: rgba(0, 0, 0, 0.9);
         border-radius: 12px;
         position: relative;
         overflow: hidden;
@@ -355,8 +379,19 @@ body {
         padding: 1rem;
     }
 
+    .logo-container {
+        width: 60px;
+        height: 60px;
+    }
+
     .site-logo {
         width: 60px;
+        height: 60px;
+    }
+
+    .logo-animation {
+        width: 60px;
+        height: 60px;
     }
 
     #webgl-background {
@@ -411,7 +446,18 @@ body {
         padding: 0.75rem;
     }
 
+    .logo-container {
+        width: 50px;
+        height: 50px;
+    }
+
     .site-logo {
         width: 50px;
+        height: 50px;
+    }
+
+    .logo-animation {
+        width: 50px;
+        height: 50px;
     }
 }
