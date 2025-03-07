@@ -207,13 +207,31 @@ class WaitlistApp {
         camera.updateProjectionMatrix();
         camera.position.z = 1;
 
-        // Create a plane to render the iridescent effect
+        // Create a plane to render the logo effect
         const geometry = new THREE.PlaneGeometry(width, height);
 
-        // Load the logo texture for masking (only in dark mode)
+        // Load both logo textures
         const textureLoader = new THREE.TextureLoader();
+        let lightModeTexture, darkModeTexture;
+
+        textureLoader.load('logo_black.png', (texture) => {
+            lightModeTexture = texture;
+            checkTexturesLoaded();
+        }, undefined, (error) => {
+            console.error("Error loading logo_black.png:", error);
+        });
+
         textureLoader.load('logo.png', (texture) => {
-            // Custom shader for iridescent effect with mask
+            darkModeTexture = texture;
+            checkTexturesLoaded();
+        }, undefined, (error) => {
+            console.error("Error loading logo.png:", error);
+        });
+
+        const checkTexturesLoaded = () => {
+            if (!lightModeTexture || !darkModeTexture) return;
+
+            // Custom shader for logo effect with theme-based texture
             const vertexShader = `
                 varying vec2 vUv;
                 void main() {
@@ -225,7 +243,8 @@ class WaitlistApp {
             const fragmentShader = `
                 uniform float time;
                 uniform vec2 resolution;
-                uniform sampler2D maskTexture;
+                uniform sampler2D lightModeTexture;
+                uniform sampler2D darkModeTexture;
                 uniform bool isDarkMode;
                 varying vec2 vUv;
 
@@ -246,12 +265,13 @@ class WaitlistApp {
                     vec3 color = hsv2rgb(vec3(hue, 0.8, 1.0));
 
                     if (isDarkMode) {
-                        // Apply mask using the alpha channel of the logo texture in dark mode
-                        float mask = texture2D(maskTexture, vUv).a;
+                        // Dark mode: iridescent animation with white logo mask
+                        float mask = texture2D(darkModeTexture, vUv).a;
                         gl_FragColor = vec4(color, mask);
                     } else {
-                        // In light mode, render a solid white logo (no animation)
-                        gl_FragColor = vec4(1.0, 1.0, 1.0, texture2D(maskTexture, vUv).a);
+                        // Light mode: solid black logo
+                        float mask = texture2D(lightModeTexture, vUv).a;
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, mask); // Black color with alpha from mask
                     }
                 }
             `;
@@ -262,7 +282,8 @@ class WaitlistApp {
                 uniforms: {
                     time: { value: 0.0 },
                     resolution: { value: new THREE.Vector2(width, height) },
-                    maskTexture: { value: texture },
+                    lightModeTexture: { value: lightModeTexture },
+                    darkModeTexture: { value: darkModeTexture },
                     isDarkMode: { value: this.isDarkMode }
                 },
                 transparent: true
@@ -302,11 +323,9 @@ class WaitlistApp {
             // Store reference for theme switching
             this.logoMaterial = material;
 
-            console.log("Starting WebGL logo animation with mask...");
+            console.log("Starting WebGL logo animation with masks...");
             animate();
-        }, undefined, (error) => {
-            console.error("Error loading logo.png:", error);
-        });
+        };
     }
 
     initForm() {
@@ -406,6 +425,7 @@ class WaitlistApp {
             }
 
             console.log(`Switched to ${this.isDarkMode ? 'dark' : 'light'} mode`);
+            console.log("Current body background:", document.body.style.backgroundColor); // Debug
         });
     }
 }
