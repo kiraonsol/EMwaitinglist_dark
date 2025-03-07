@@ -92,14 +92,15 @@ class WaitlistApp {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         const geometry = new THREE.PlaneGeometry(30, 30, 32, 32);
-        const material = new THREE.MeshBasicMaterial({
+        const material = new THREE.LineBasicMaterial({
             color: 0xE25747,
-            wireframe: true,
+            linewidth: 2, // Increase line thickness
             transparent: true,
-            opacity: 0.25
+            opacity: 0.5 // Increase opacity for visibility
         });
 
-        const mesh = new THREE.Mesh(geometry, material);
+        const edges = new THREE.EdgesGeometry(geometry);
+        const mesh = new THREE.LineSegments(edges, material);
         mesh.rotation.x = -Math.PI * 0.5;
         scene.add(mesh);
 
@@ -185,28 +186,26 @@ class WaitlistApp {
         let time = 0;
 
         const animate = () => {
-            time += 0.05; // Control the speed of the animation
+            time += 0.05;
 
-            // Clear the canvas
             ctx.clearRect(0, 0, width, height);
 
             // Create a radial gradient for the iridescent effect
             const gradient = ctx.createRadialGradient(
-                width / 2 + Math.sin(time) * 20, // Swirling center X
-                height / 2 + Math.cos(time) * 20, // Swirling center Y
+                width / 2 + Math.sin(time) * 20,
+                height / 2 + Math.cos(time) * 20,
                 0,
                 width / 2,
                 height / 2,
-                Math.max(width, height) // Radius
+                Math.max(width, height)
             );
 
-            // Add iridescent colors (purple, blue, green, pink)
+            // Add iridescent colors
             gradient.addColorStop(0, `hsl(${Math.sin(time) * 360}, 80%, 60%)`);
             gradient.addColorStop(0.3, `hsl(${(Math.sin(time + 1) * 360) % 360}, 80%, 60%)`);
             gradient.addColorStop(0.6, `hsl(${(Math.sin(time + 2) * 360) % 360}, 80%, 60%)`);
             gradient.addColorStop(1, `hsl(${(Math.sin(time + 3) * 360) % 360}, 80%, 60%)`);
 
-            // Fill the canvas with the gradient
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
@@ -222,6 +221,7 @@ class WaitlistApp {
         window.addEventListener('resize', handleResize);
         handleResize();
 
+        // Ensure the animation is visible through the logo
         console.log("Starting logo animation...");
         animate();
     }
