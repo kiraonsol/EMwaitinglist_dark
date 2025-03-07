@@ -33,7 +33,7 @@ body {
     width: 100%;
     height: 100vh;
     z-index: 1;
-    opacity: 0.25;
+    opacity: 0.5; /* Increased opacity to make WebGL more visible */
     display: block;
 }
 
@@ -264,7 +264,7 @@ body {
 .logo-container {
     position: relative;
     width: 80px;
-    height: 80px; /* Match the logo size */
+    height: 80px;
 }
 
 .site-logo {
@@ -278,12 +278,15 @@ body {
     transform: translateY(-20px);
     animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition: transform 0.3s ease, filter 0.3s ease;
-    /* Use the logo as a mask */
     -webkit-mask-image: url('logo.png');
     mask-image: url('logo.png');
     -webkit-mask-size: cover;
     mask-size: cover;
-    background: transparent; /* Ensure the logo itself is transparent, revealing the canvas underneath */
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    background: transparent;
+    /* Ensure the logo is fully visible and the animation shows through */
+    mix-blend-mode: lighten; /* Helps with visibility against the animation */
 }
 
 .site-logo:hover {
@@ -401,7 +404,7 @@ body {
         width: 100%;
         height: 100%;
         z-index: 1;
-        opacity: 0.25;
+        opacity: 0.5; /* Increased opacity */
     }
 
     .webgl-fallback p {
