@@ -1,0 +1,417 @@
+:root {
+    --primary: #FF6F61; /* Keep the same highlight color */
+    --primary-dark: #E25747;
+    --background: #000000; /* Black background for dark mode */
+    --text: #FFFFFF; /* White text for dark mode */
+    --text-secondary: rgba(255, 255, 255, 0.7); /* Lighter gray for secondary text */
+    --overlay: rgba(0, 0, 0, 0.9); /* Dark overlay for mobile hero content */
+    --glass: rgba(255, 255, 255, 0.1); /* Slightly lighter glass effect for dark mode */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+    background-color: var(--background);
+}
+
+body {
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+#webgl-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    opacity: 0.25;
+    display: block;
+}
+
+.webgl-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95); /* Dark background for fallback */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    z-index: 1;
+}
+
+.webgl-fallback p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+        "hero video"
+        "waitlist video";
+    gap: 4rem;
+    align-items: center;
+}
+
+.hero-content {
+    max-width: 600px;
+    grid-area: hero;
+    position: relative;
+}
+
+.title-sequence {
+    font-size: clamp(3rem, 8vw, 5rem);
+    line-height: 1;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    animation: fadeUpScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    z-index: 2;
+    font-weight: 800;
+    color: var(--text); /* White text for dark mode */
+}
+
+.subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    position: relative;
+    z-index: 2;
+    font-weight: 400;
+}
+
+.waitlist-section {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    grid-area: waitlist;
+}
+
+.form-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-field {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Light border for dark mode */
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(200, 200, 200, 0.05) 100%);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+    font-weight: 400;
+    color: var(--text); /* White text */
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 111, 97, 0.15);
+}
+
+.input-field::placeholder {
+    color: var(--text-secondary); /* Lighter placeholder text */
+}
+
+.submit-btn {
+    padding: 1rem 2rem;
+    background: var(--text); /* White button background */
+    color: var(--background); /* Black text on button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(255, 255, 255, 0.15); /* Light shadow for dark mode */
+    background: #E6E6E6; /* Slightly darker white on hover */
+}
+
+.form-note {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1); /* Light shadow for dark mode */
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    grid-area: video;
+    align-self: start;
+}
+
+.video-container:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(255, 255, 255, 0.15);
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 111, 97, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.95); /* Dark footer background */
+    margin-top: auto;
+    font-weight: 400;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeUpScale {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.highlight {
+    color: var(--primary);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.highlight:hover {
+    filter: brightness(1.2);
+}
+
+.site-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1.5rem;
+    z-index: 3;
+}
+
+.site-logo {
+    width: 80px;
+    height: auto;
+    display: block;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.site-logo:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+@keyframes fadeDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        grid-template-areas: 
+            "hero"
+            "video"
+            "waitlist";
+    }
+
+    .hero-section {
+        padding: 1rem;
+        min-height: auto;
+    }
+
+    .hero-content {
+        max-width: 100%;
+        text-align: center;
+        padding-top: 6rem;
+        padding-bottom: 2rem;
+        background: rgba(0, 0, 0, 0.9); /* Dark background for mobile hero */
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .title-sequence {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        margin-bottom: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: clamp(0.9rem, 3vw, 1.1rem);
+        margin-bottom: 2rem;
+    }
+
+    .video-container {
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto;
+        grid-area: video;
+    }
+
+    .waitlist-section {
+        grid-area: waitlist;
+    }
+
+    .form-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .input-field {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .form-note {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
+
+    .site-header {
+        padding: 1rem;
+    }
+
+    .site-logo {
+        width: 60px;
+    }
+
+    #webgl-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.25;
+    }
+
+    .webgl-fallback p {
+        font-size: 0.8rem;
+    }
+
+    .site-footer {
+        font-size: 0.65rem;
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 0.5rem;
+    }
+
+    .hero-content {
+        padding-top: 5.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .title-sequence {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+
+    .subtitle {
+        font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+    }
+
+    .input-field,
+    .submit-btn {
+        font-size: 0.9rem;
+        padding: 0.6rem;
+    }
+
+    .form-note {
+        font-size: 0.75rem;
+    }
+
+    .site-header {
+        padding: 0.75rem;
+    }
+
+    .site-logo {
+        width: 50px;
+    }
+}
