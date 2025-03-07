@@ -1,9 +1,11 @@
 class WaitlistApp {
     constructor() {
+        this.isDarkMode = false; // Track the current theme
         this.initFirebase();
         this.initWebGL();
         this.initLogoAnimation();
         this.initForm();
+        this.initThemeToggle();
     }
 
     initFirebase() {
@@ -96,7 +98,7 @@ class WaitlistApp {
             color: 0xE25747,
             wireframe: true,
             transparent: true,
-            opacity: 0.75
+            opacity: this.isDarkMode ? 0.75 : 0.25 // Initial opacity based on theme
         });
 
         const mesh = new THREE.Mesh(geometry, material);
@@ -166,6 +168,9 @@ class WaitlistApp {
             mesh.rotation.y = mouseX * 0.1;
         });
 
+        // Store references for theme switching
+        this.backgroundMaterial = material;
+
         console.log("Starting WebGL animation...");
         console.log("Video autoplay with sound attempted. Check console for autoplay status.");
         animate();
@@ -205,7 +210,7 @@ class WaitlistApp {
         // Create a plane to render the iridescent effect
         const geometry = new THREE.PlaneGeometry(width, height);
 
-        // Load the logo texture for masking
+        // Load the logo texture for masking (only in dark mode)
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load('logo.png', (texture) => {
             // Custom shader for iridescent effect with mask
@@ -221,6 +226,7 @@ class WaitlistApp {
                 uniform float time;
                 uniform vec2 resolution;
                 uniform sampler2D maskTexture;
+                uniform bool isDarkMode;
                 varying vec2 vUv;
 
                 vec3 hsv2rgb(vec3 c) {
@@ -239,9 +245,14 @@ class WaitlistApp {
                     hue = fract(hue);
                     vec3 color = hsv2rgb(vec3(hue, 0.8, 1.0));
 
-                    // Apply mask using the alpha channel of the logo texture
-                    float mask = texture2D(maskTexture, vUv).a;
-                    gl_FragColor = vec4(color, mask);
+                    if (isDarkMode) {
+                        // Apply mask using the alpha channel of the logo texture in dark mode
+                        float mask = texture2D(maskTexture, vUv).a;
+                        gl_FragColor = vec4(color, mask);
+                    } else {
+                        // In light mode, render a solid white logo (no animation)
+                        gl_FragColor = vec4(1.0, 1.0, 1.0, texture2D(maskTexture, vUv).a);
+                    }
                 }
             `;
 
@@ -251,7 +262,8 @@ class WaitlistApp {
                 uniforms: {
                     time: { value: 0.0 },
                     resolution: { value: new THREE.Vector2(width, height) },
-                    maskTexture: { value: texture }
+                    maskTexture: { value: texture },
+                    isDarkMode: { value: this.isDarkMode }
                 },
                 transparent: true
             });
@@ -286,6 +298,9 @@ class WaitlistApp {
 
             window.addEventListener('resize', handleResize);
             handleResize();
+
+            // Store reference for theme switching
+            this.logoMaterial = material;
 
             console.log("Starting WebGL logo animation with mask...");
             animate();
@@ -357,6 +372,40 @@ class WaitlistApp {
                     button.disabled = false;
                 }, 2000);
             }
+        });
+    }
+
+    initThemeToggle() {
+        const themeSwitch = document.querySelector('#theme-switch');
+        const themeLabel = document.querySelector('.theme-label');
+
+        if (!themeSwitch || !themeLabel) {
+            console.error("Theme toggle elements not found!");
+            return;
+        }
+
+        // Set initial state
+        themeLabel.textContent = this.isDarkMode ? "Dark Mode" : "Light Mode";
+        document.body.classList.toggle('dark-mode', this.isDarkMode);
+
+        themeSwitch.addEventListener('change', () => {
+            this.isDarkMode = themeSwitch.checked;
+            document.body.classList.toggle('dark-mode', this.isDarkMode);
+            themeLabel.textContent = this.isDarkMode ? "Dark Mode" : "Light Mode";
+
+            // Update WebGL background opacity
+            if (this.backgroundMaterial) {
+                this.backgroundMaterial.opacity = this.isDarkMode ? 0.75 : 0.25;
+                this.backgroundMaterial.needsUpdate = true;
+            }
+
+            // Update logo animation
+            if (this.logoMaterial) {
+                this.logoMaterial.uniforms.isDarkMode.value = this.isDarkMode;
+                this.logoMaterial.needsUpdate = true;
+            }
+
+            console.log(`Switched to ${this.isDarkMode ? 'dark' : 'light'} mode`);
         });
     }
 }
