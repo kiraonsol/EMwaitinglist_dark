@@ -91,16 +91,16 @@ class WaitlistApp {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+        // Revert to original wireframe setup with enhanced visibility
         const geometry = new THREE.PlaneGeometry(30, 30, 32, 32);
-        const material = new THREE.LineBasicMaterial({
-            color: 0xE25747,
-            linewidth: 2, // Increase line thickness
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xE25747, // Keep the same color
+            wireframe: true,
             transparent: true,
-            opacity: 0.5 // Increase opacity for visibility
+            opacity: 0.75 // Increased from 0.25 to 0.75 for better visibility on black
         });
 
-        const edges = new THREE.EdgesGeometry(geometry);
-        const mesh = new THREE.LineSegments(edges, material);
+        const mesh = new THREE.Mesh(geometry, material);
         mesh.rotation.x = -Math.PI * 0.5;
         scene.add(mesh);
 
@@ -200,7 +200,7 @@ class WaitlistApp {
                 Math.max(width, height)
             );
 
-            // Add iridescent colors
+            // Add vibrant iridescent colors
             gradient.addColorStop(0, `hsl(${Math.sin(time) * 360}, 80%, 60%)`);
             gradient.addColorStop(0.3, `hsl(${(Math.sin(time + 1) * 360) % 360}, 80%, 60%)`);
             gradient.addColorStop(0.6, `hsl(${(Math.sin(time + 2) * 360) % 360}, 80%, 60%)`);
@@ -221,7 +221,7 @@ class WaitlistApp {
         window.addEventListener('resize', handleResize);
         handleResize();
 
-        // Ensure the animation is visible through the logo
+        // Debugging to ensure animation is running
         console.log("Starting logo animation...");
         animate();
     }
